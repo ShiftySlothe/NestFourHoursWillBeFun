@@ -1,31 +1,24 @@
 import * as React from "react";
-import {
-  Container,
-  Flex,
-  Heading,
-  FormControl,
-  Select,
-  Box,
-} from "@chakra-ui/react";
+import { UserType } from "./types";
+import { useGetUserTypeFromLocalStorage } from "./hooks/userType";
+import Page from "./pages";
+
+type UserContextType = {
+  user: UserType;
+  setUserType: Function;
+};
+
+export const UserTypeContext = React.createContext<UserContextType>({
+  user: null,
+  setUserType: () => {},
+});
 
 export const App = () => {
+  const value = useGetUserTypeFromLocalStorage();
+
   return (
-    <Container maxW="1600px" paddingX={{ base: "5px", md: "40px", lg: "60px" }}>
-      <Flex
-        alignItems="center"
-        justifyContent="space-between"
-        paddingY={{ base: "5px", md: "20px", lg: "30px" }}
-      >
-        <Heading>Job Board</Heading>
-        <Box>
-          <FormControl display="flex" alignItems="center">
-            <Select placeholder="Select role">
-              <option value="solicitor">Solicitor</option>
-              <option value="client">Client</option>
-            </Select>
-          </FormControl>
-        </Box>
-      </Flex>
-    </Container>
+    <UserTypeContext.Provider value={value}>
+      <Page />
+    </UserTypeContext.Provider>
   );
 };
