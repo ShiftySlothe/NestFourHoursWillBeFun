@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import { UserTypeContext } from "../App";
+import AllJobs from "../sections/AllJobs";
 import CreateJobForm from "../sections/CreateJobForm";
 import Header from "../sections/Header";
 import { UserTypes } from "../types";
@@ -10,8 +11,13 @@ export default function Index() {
   return (
     <>
       <Header />
-      {user === UserTypes.Client && <div>CLIENT</div>}
-      {user === UserTypes.Solicitor && <CreateJobForm />}
+      {user === UserTypes.Client && <AllJobs />}
+      {user === UserTypes.Solicitor && (
+        <>
+          <CreateJobForm />
+          <AllJobs />
+        </>
+      )}
     </>
   );
 }

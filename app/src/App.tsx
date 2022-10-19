@@ -3,6 +3,9 @@ import { UserType } from "./types";
 import { useGetUserTypeFromLocalStorage } from "./hooks/userType";
 import Page from "./pages";
 import SignInModal from "./sections/SignInModal";
+import { QueryClient, QueryClientProvider } from "react-query";
+
+const queryClient = new QueryClient();
 
 type UserContextType = {
   user: UserType;
@@ -18,9 +21,11 @@ export const App = () => {
   const value = useGetUserTypeFromLocalStorage();
 
   return (
-    <UserTypeContext.Provider value={value}>
-      {!value.user ? <SignInModal setOpen /> : null}
-      <Page />
-    </UserTypeContext.Provider>
+    <QueryClientProvider client={queryClient}>
+      <UserTypeContext.Provider value={value}>
+        {!value.user ? <SignInModal setOpen /> : null}
+        <Page />
+      </UserTypeContext.Provider>
+    </QueryClientProvider>
   );
 };

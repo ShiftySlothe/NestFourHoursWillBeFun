@@ -7,68 +7,101 @@ import {
   FormLabel,
   Heading,
   Input,
+  Text,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React from "react";
+import { useForm, UseFormRegister, FieldValues } from "react-hook-form";
+import { useMutation } from "react-query";
+import axios from "axios";
 
 export default function CreateJobForm() {
-  const submitFormData = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const data = Object.fromEntries(formData.entries());
-    console.log(data);
-  };
+  const {
+    handleSubmit,
+    register,
+    formState: { errors, isSubmitting },
+  } = useForm();
+
+  const mutation = useMutation((formData: FieldValues) => {
+    const data = { ...formData, started: true };
+    return axios.post("http://localhost:4000/job-post", data);
+  });
+
+  function onSubmit(values: FieldValues) {
+    mutation.mutate(values);
+  }
 
   return (
     <Container>
       <Heading marginBottom={4}>Create a new job</Heading>
-      <form onSubmit={submitFormData}>
-        <TitleField />
-        <DescriptionField />
-        <Button marginTop={4} type="submit">
-          Submit
-        </Button>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <TitleField register={register} errors={errors} />
+        <DescriptionField register={register} errors={errors} />
+        <FormControl>
+          <Button
+            marginTop={4}
+            type="submit"
+            isLoading={isSubmitting || mutation.isLoading}
+          >
+            Submit
+          </Button>
+        </FormControl>
       </form>
+      {mutation.isError && (
+        <Text color="red">
+          There was an error creating your job, please try again.
+        </Text>
+      )}
     </Container>
   );
 }
 
-function TitleField() {
-  const [input, setInput] = useState("");
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setInput(e.target.value);
-
-  const isError = input === "";
-
+function TitleField({
+  register,
+  errors,
+}: {
+  register: UseFormRegister<FieldValues>;
+  errors: any;
+}) {
   return (
-    <FormControl id="title" isRequired>
+    <FormControl id="title" isRequired isInvalid={errors.title}>
       <FormLabel>Title</FormLabel>
-      <Input type="text" value={input} onChange={handleInputChange} />
-      {!isError ? (
-        <FormHelperText>Please enter the title of the job.</FormHelperText>
-      ) : (
-        <FormErrorMessage>Job is required.</FormErrorMessage>
-      )}
+      <Input
+        type="text"
+        {...register("title", {
+          required: "This is required",
+          minLength: { value: 4, message: "Minimum length should be 4" },
+        })}
+      />
+      <FormHelperText>Please enter the title of the job.</FormHelperText>
+      <FormErrorMessage>
+        {errors.title && errors.title.message}
+      </FormErrorMessage>
     </FormControl>
   );
 }
 
-function DescriptionField() {
-  const [input, setInput] = useState("");
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setInput(e.target.value);
-
-  const isError = input === "";
+function DescriptionField({
+  register,
+  errors,
+}: {
+  register: UseFormRegister<FieldValues>;
+  errors: any;
+}) {
   return (
-    <FormControl id="description" isRequired>
+    <FormControl id="description" isRequired isInvalid={errors.description}>
       <FormLabel>Description</FormLabel>
-      <Input type="email" value={input} onChange={handleInputChange} />
-      {!isError ? (
-        <FormHelperText>Please enter a description for the job.</FormHelperText>
-      ) : (
-        <FormErrorMessage>Description is required.</FormErrorMessage>
-      )}
+      <Input
+        type="text"
+        required
+        {...register("description", {
+          required: "This is required",
+          minLength: { value: 5, message: "Minimum length should be 5" },
+        })}
+      />
+      <FormHelperText>Please enter a description for the job.</FormHelperText>
+      <FormErrorMessage>
+        {errors.description && errors.description.message}
+      </FormErrorMessage>
     </FormControl>
   );
 }
