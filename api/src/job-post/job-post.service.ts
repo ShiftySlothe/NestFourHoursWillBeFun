@@ -3,30 +3,33 @@ import { JOBPOST_MODEL } from 'src/database/const';
 import { CreateJobPostDto } from './dto/create-job-post.dto';
 import { UpdateJobPostDto } from './dto/update-job-post.dto';
 import { Model } from 'mongoose';
+import { JobPost } from 'src/job-post/jobPost.schema';
 
 @Injectable()
 export class JobPostService {
   constructor(
     @Inject(JOBPOST_MODEL)
-    private catModel: Model<Cat>,
+    private jobPostModel: Model<JobPost>,
   ) {}
+
   create(createJobPostDto: CreateJobPostDto) {
-    return 'This action adds a new jobPost';
+    const jobPost = new this.jobPostModel(createJobPostDto);
+    return jobPost.save();
   }
 
   findAll() {
-    return `This action returns all jobPost`;
+    return this.jobPostModel.find().exec();
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} jobPost`;
+    return this.jobPostModel.findById(id).exec();
   }
 
   update(id: number, updateJobPostDto: UpdateJobPostDto) {
-    return `This action updates a #${id} jobPost`;
+    return this.jobPostModel.findByIdAndUpdate(id, updateJobPostDto).exec();
   }
 
   remove(id: number) {
-    return `This action removes a #${id} jobPost`;
+    return this.jobPostModel.findByIdAndDelete(id).exec();
   }
 }

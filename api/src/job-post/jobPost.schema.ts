@@ -1,7 +1,6 @@
 import * as mongoose from 'mongoose';
-import { JobPost } from 'src/job-post/entities/job-post.entity';
 
-interface JobPost {
+export interface JobPost {
   title: string;
   description: string;
   started: Date;

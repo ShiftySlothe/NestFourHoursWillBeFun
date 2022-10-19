@@ -1,5 +1,5 @@
 import { Connection } from 'mongoose';
-import { DATABASE_CONNECTION, JOBPOST_MODEL } from '../const';
+import { DATABASE_CONNECTION, JOBPOST_MODEL } from 'src/database/const';
 import { JobPostSchema } from './jobPost.schema';
 
 export const jobPostProviders = [
