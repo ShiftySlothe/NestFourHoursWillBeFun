@@ -12,12 +12,7 @@ export default function Index() {
     <>
       <Header />
       {user === UserTypes.Client && <AllJobs />}
-      {user === UserTypes.Solicitor && (
-        <>
-          <CreateJobForm />
-          <AllJobs />
-        </>
-      )}
+      {user === UserTypes.Solicitor && <CreateJobForm />}
     </>
   );
 }

@@ -6,6 +6,8 @@ import {
   Patch,
   Param,
   Delete,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { JobPostService } from './job-post.service';
 import { CreateJobPostDto } from './dto/create-job-post.dto';
@@ -17,6 +19,16 @@ export class JobPostController {
 
   @Post()
   create(@Body() createJobPostDto: CreateJobPostDto) {
+    if (
+      createJobPostDto.feeStructure !== 'noWinNoFee' &&
+      createJobPostDto.feeStructure !== 'fixedFee'
+    ) {
+      console.log(createJobPostDto.feeStructure);
+      throw new HttpException(
+        "feeStructure must be 'noWinNoFee' or 'fixedFee'",
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     return this.jobPostService.create(createJobPostDto);
   }
 

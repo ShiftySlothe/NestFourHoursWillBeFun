@@ -7,6 +7,7 @@ import {
   FormLabel,
   Heading,
   Input,
+  Select,
   Text,
 } from "@chakra-ui/react";
 import React from "react";
@@ -36,6 +37,7 @@ export default function CreateJobForm() {
       <form onSubmit={handleSubmit(onSubmit)}>
         <TitleField register={register} errors={errors} />
         <DescriptionField register={register} errors={errors} />
+        <FeeType register={register} errors={errors} />
         <FormControl>
           <Button
             marginTop={4}
@@ -99,6 +101,33 @@ function DescriptionField({
         })}
       />
       <FormHelperText>Please enter a description for the job.</FormHelperText>
+      <FormErrorMessage>
+        {errors.description && errors.description.message}
+      </FormErrorMessage>
+    </FormControl>
+  );
+}
+
+function FeeType({
+  register,
+  errors,
+}: {
+  register: UseFormRegister<FieldValues>;
+  errors: any;
+}) {
+  return (
+    <FormControl id="feeStructure" isRequired isInvalid={errors.description}>
+      <FormLabel>Description</FormLabel>
+      <Select
+        {...register("feeStructure", {
+          required: "This is required",
+        })}
+        placeholder="Select option"
+      >
+        <option value="fixedFee">Fixed Fee</option>
+        <option value="noWinNoFee">No Win No Fee</option>
+      </Select>
+      <FormHelperText>Please select a fee type.</FormHelperText>
       <FormErrorMessage>
         {errors.description && errors.description.message}
       </FormErrorMessage>

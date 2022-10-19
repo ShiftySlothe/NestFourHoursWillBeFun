@@ -4,7 +4,7 @@ export interface JobPost {
   title: string;
   description: string;
   started: boolean;
-  feeStructure: 'noWinNoFee' | 'fixedFee';
+  feeStructure: string;
 }
 
 export const JobPostSchema = new mongoose.Schema<JobPost>({

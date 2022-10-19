@@ -2,13 +2,8 @@ import React from "react";
 import { useQuery } from "react-query";
 import axios from "axios";
 import { Box, Container, Heading, Text } from "@chakra-ui/react";
+import { JobPost } from "../types";
 
-interface JobPost {
-  id: string;
-  title: string;
-  description: string;
-  started: boolean;
-}
 export default function AllJobs() {
   const query = useQuery("jobs", () =>
     axios.get("http://localhost:4000/job-post")
@@ -33,6 +28,7 @@ export default function AllJobs() {
           >
             <Heading size="md">{job.title}</Heading>
             <Text>{job.description}</Text>
+            <Text>{job.feeStructure}</Text>
           </Box>
         ))}
     </Container>

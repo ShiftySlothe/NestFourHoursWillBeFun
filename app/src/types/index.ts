@@ -4,3 +4,11 @@ export enum UserTypes {
   Solicitor = "Solicitor",
   Client = "Client",
 }
+
+export interface JobPost {
+  id: string;
+  title: string;
+  description: string;
+  started: boolean;
+  feeStructure: "fixedFee" | "noWinNoFee";
+}
