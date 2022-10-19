@@ -14,8 +14,6 @@ export function useGetUserTypeFromLocalStorage() {
     // Check local storage for userType
     const userType = localStorage.getItem("userType");
     if (userType) {
-      console.log("User type found");
-      console.log(userType);
       setUserType(userType as UserType);
     }
   }, [setUserType]);

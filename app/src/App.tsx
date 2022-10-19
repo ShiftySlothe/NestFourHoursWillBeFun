@@ -2,6 +2,7 @@ import * as React from "react";
 import { UserType } from "./types";
 import { useGetUserTypeFromLocalStorage } from "./hooks/userType";
 import Page from "./pages";
+import SignInModal from "./sections/SignInModal";
 
 type UserContextType = {
   user: UserType;
@@ -18,6 +19,7 @@ export const App = () => {
 
   return (
     <UserTypeContext.Provider value={value}>
+      {!value.user ? <SignInModal setOpen /> : null}
       <Page />
     </UserTypeContext.Provider>
   );
