@@ -4,6 +4,6 @@ import { JobPostController } from './job-post.controller';
 
 @Module({
   controllers: [JobPostController],
-  providers: [JobPostService]
+  providers: [JobPostService],
 })
 export class JobPostModule {}
