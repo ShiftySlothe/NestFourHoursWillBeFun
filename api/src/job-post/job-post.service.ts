@@ -1,9 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { JOBPOST_MODEL } from 'src/database/const';
 import { CreateJobPostDto } from './dto/create-job-post.dto';
 import { UpdateJobPostDto } from './dto/update-job-post.dto';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class JobPostService {
+  constructor(
+    @Inject(JOBPOST_MODEL)
+    private catModel: Model<Cat>,
+  ) {}
   create(createJobPostDto: CreateJobPostDto) {
     return 'This action adds a new jobPost';
   }
