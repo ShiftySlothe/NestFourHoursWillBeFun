@@ -21,7 +21,11 @@ export class JobPostController {
 
   @Post()
   create(@Body() createJobPostDto: CreateJobPostDto) {
-    console.log(createJobPostDto);
+    this.handleCreateErrors(createJobPostDto);
+    return this.jobPostService.create(createJobPostDto);
+  }
+
+  private handleCreateErrors(createJobPostDto: CreateJobPostDto) {
     if (!createJobPostDto.title) {
       console.log('Unable to create job post as title not found');
       throw new HttpException(standardErrRes, HttpStatus.BAD_REQUEST);
@@ -61,18 +65,22 @@ export class JobPostController {
     }
     if (
       createJobPostDto.feeStructure === 'noWinNoFee' &&
-      (!createJobPostDto.feePercentage || !createJobPostDto.feeAmmount)
+      (!createJobPostDto.feePercentage ||
+        !createJobPostDto.settlementConstraints.min ||
+        !createJobPostDto.settlementConstraints.max)
     ) {
-      console.log('Unable to create post as feePercentage found.');
+      console.log(
+        'Unable to create post as feePercentage or settle constraints not found.',
+      );
       throw new HttpException(
-        'Fee percentage must not be provided if feeStructure is No Win No Fee',
+        'Fee percentage and settlement constraints must not be provided if feeStructure is No Win No Fee',
         HttpStatus.BAD_REQUEST,
       );
     }
 
     if (
       createJobPostDto.feePercentage > 1 ||
-      createJobPostDto.feePercentage < 0.1
+      createJobPostDto.feePercentage < 0.01
     ) {
       console.log(
         'Fee percentage range incorrect ',
@@ -83,7 +91,6 @@ export class JobPostController {
         HttpStatus.BAD_REQUEST,
       );
     }
-    return this.jobPostService.create(createJobPostDto);
   }
 
   @Get()
@@ -98,7 +105,6 @@ export class JobPostController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateJobPostDto: UpdateJobPostDto) {
-    console.log(id);
     return this.jobPostService.update(id, updateJobPostDto);
   }
 
