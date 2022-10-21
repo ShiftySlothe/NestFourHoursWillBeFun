@@ -7,7 +7,6 @@ export default function SelectUserRole() {
   const { user, setUserType } = useContext(UserTypeContext);
 
   const updateUserType = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    console.log("Updating user type to: ", e.target.value);
     setUserType(e.target.value as UserTypes);
     localStorage.setItem("userType", e.target.value);
   };
