@@ -5,7 +5,7 @@ import Page from "./pages";
 import SignInModal from "./sections/SignInModal";
 import { QueryClient, QueryClientProvider } from "react-query";
 
-const queryClient = new QueryClient();
+export const queryClient = new QueryClient();
 
 type UserContextType = {
   user: UserType;
