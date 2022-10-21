@@ -26,7 +26,6 @@ import { useMutation } from "react-query";
 import { queryClient, UserTypeContext } from "../App";
 import SectionContainer from "../layout/Container";
 import { useForm, UseFormRegister, FieldValues } from "react-hook-form";
-import { join } from "path";
 
 export default function AllJobs() {
   const query = useQuery("jobs", () =>
