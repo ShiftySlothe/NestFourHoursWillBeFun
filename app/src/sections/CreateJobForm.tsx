@@ -22,13 +22,20 @@ export default function CreateJobForm() {
     formState: { errors, isSubmitting },
   } = useForm();
 
-  const mutation = useMutation((formData: FieldValues) => {
-    const data = { ...formData, started: true };
-    return axios.post("http://localhost:4000/job-post", data);
-  });
+  const createJobMutation = useMutation(
+    (formData: FieldValues) => {
+      const data = { ...formData, started: true };
+      return axios.post("http://localhost:4000/job-post", data);
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("jobs");
+      },
+    }
+  );
 
   function onSubmit(values: FieldValues) {
-    mutation.mutate(values);
+    createJobMutation.mutate(values);
   }
 
   return (
@@ -42,13 +49,13 @@ export default function CreateJobForm() {
           <Button
             marginTop={4}
             type="submit"
-            isLoading={isSubmitting || mutation.isLoading}
+            isLoading={isSubmitting || createJobMutation.isLoading}
           >
             Submit
           </Button>
         </FormControl>
       </form>
-      {mutation.isError && (
+      {createJobMutation.isError && (
         <Text color="red">
           There was an error creating your job, please try again.
         </Text>
