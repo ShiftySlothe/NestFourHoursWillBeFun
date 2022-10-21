@@ -17,11 +17,9 @@ import axios from "axios";
 import { queryClient } from "../App";
 
 export default function CreateJobForm() {
-  const {
-    handleSubmit,
-    register,
-    formState: { errors, isSubmitting },
-  } = useForm();
+  const { handleSubmit, register, formState } = useForm();
+
+  const { errors, isSubmitting } = formState;
 
   const createJobMutation = useMutation(
     (formData: FieldValues) => {
@@ -45,7 +43,7 @@ export default function CreateJobForm() {
       <form onSubmit={handleSubmit(onSubmit)}>
         <TitleField register={register} errors={errors} />
         <DescriptionField register={register} errors={errors} />
-        <FeeType register={register} errors={errors} />
+        <FeeStructure register={register} errors={errors} />
         <FormControl>
           <Button
             marginTop={4}
@@ -116,7 +114,45 @@ function DescriptionField({
   );
 }
 
-function FeeType({
+function FeeStructure({
+  register,
+  errors,
+}: {
+  register: UseFormRegister<FieldValues>;
+  errors: any;
+}) {
+  const [feeStructure, setFeeStructure] = React.useState<string>("");
+  return (
+    <>
+      <FormControl id="feeStructure" isRequired isInvalid={errors.description}>
+        <FormLabel>Description</FormLabel>
+        <Select
+          {...register("feeStructure", {
+            required: "This is required",
+          })}
+          placeholder="Select option"
+          onChange={(e) => setFeeStructure(e.target.value)}
+        >
+          <option value="fixedFee">Fixed Fee</option>
+          <option value="noWinNoFee">No Win No Fee</option>
+        </Select>
+        <FormHelperText>Please select a fee type.</FormHelperText>
+        <FormErrorMessage>
+          {errors.description && errors.description.message}
+        </FormErrorMessage>
+      </FormControl>
+      {feeStructure === "fixedFee" && (
+        <FeeAmmount register={register} errors={errors} />
+      )}
+      {feeStructure === "noWinNoFee" && (
+        <FeePercentage register={register} errors={errors} />
+      )}
+    </>
+  );
+}
+
+// Fee Percentage Field
+function FeePercentage({
   register,
   errors,
 }: {
@@ -124,20 +160,43 @@ function FeeType({
   errors: any;
 }) {
   return (
-    <FormControl id="feeStructure" isRequired isInvalid={errors.description}>
-      <FormLabel>Description</FormLabel>
-      <Select
-        {...register("feeStructure", {
+    <FormControl id="feePercentage" isRequired isInvalid={errors.feePercentage}>
+      <FormLabel>Fee Percentage</FormLabel>
+      <Input
+        type="number"
+        {...register("feePercentage", {
+          required: "This is required",
+          min: { value: 1, message: "Minimum value should be 1" },
+          max: { value: 100, message: "Maximum value should be 100" },
+        })}
+      />
+      <FormHelperText>Please enter the fee percentage.</FormHelperText>
+      <FormErrorMessage>
+        {errors.feePercentage && errors.feePercentage.message}
+      </FormErrorMessage>
+    </FormControl>
+  );
+}
+
+function FeeAmmount({
+  register,
+  errors,
+}: {
+  register: UseFormRegister<FieldValues>;
+  errors: any;
+}) {
+  return (
+    <FormControl id="feeAmmount" isRequired isInvalid={errors.feeAmmount}>
+      <FormLabel>Fee Ammount</FormLabel>
+      <Input
+        type="number"
+        {...register("feeAmmount", {
           required: "This is required",
         })}
-        placeholder="Select option"
-      >
-        <option value="fixedFee">Fixed Fee</option>
-        <option value="noWinNoFee">No Win No Fee</option>
-      </Select>
-      <FormHelperText>Please select a fee type.</FormHelperText>
+      />
+      <FormHelperText>Please enter the fee ammount.</FormHelperText>
       <FormErrorMessage>
-        {errors.description && errors.description.message}
+        {errors.feeAmmount && errors.feeAmmount.message}
       </FormErrorMessage>
     </FormControl>
   );

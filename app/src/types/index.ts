@@ -13,4 +13,6 @@ export interface JobPost {
   feeStructure: "fixedFee" | "noWinNoFee";
   paid: boolean;
   paidAmount: number;
+  feePercentage?: number;
+  feeAmmount?: number;
 }
