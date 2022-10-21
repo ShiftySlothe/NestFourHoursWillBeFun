@@ -1,6 +1,5 @@
 import {
   Button,
-  Container,
   FormControl,
   FormErrorMessage,
   FormHelperText,
@@ -16,6 +15,7 @@ import { useMutation } from "react-query";
 import axios from "axios";
 import { queryClient } from "../App";
 import { useToast } from "@chakra-ui/react";
+import SectionContainer from "../layout/Container";
 
 export default function CreateJobForm() {
   const { handleSubmit, register, formState } = useForm();
@@ -24,7 +24,25 @@ export default function CreateJobForm() {
   const { errors, isSubmitting } = formState;
 
   const createJobMutation = useMutation(
+    // TODO: Find out how to type this
     (formData: FieldValues) => {
+      // Turns feePercentage into correct decimal from numeric value
+      if (formData.feePercentage) {
+        formData.feePercentage = formData.feePercentage * 0.01;
+      }
+
+      if (formData.feeStructure === "noWinNoFee") {
+        if (!formData.minSettlement || !formData.maxSettlement) {
+          // TODO: Raise sentry error
+        }
+        formData.settlementConstraints = {
+          min: formData.minSettlement,
+          max: formData.maxSettlement,
+        };
+        delete formData.minSettlement;
+        delete formData.maxSettlement;
+      }
+
       const data = { ...formData, started: true, paid: false };
       return axios.post("http://localhost:4000/job-post", data);
     },
@@ -58,9 +76,10 @@ export default function CreateJobForm() {
   }
 
   return (
-    <Container>
+    <SectionContainer>
       <Heading marginBottom={4}>Create a new job</Heading>
       <form onSubmit={handleSubmit(onSubmit)}>
+        <TitleField register={register} errors={errors} />
         <DescriptionField register={register} errors={errors} />
         <FeeStructure register={register} errors={errors} />
         <FormControl>
@@ -78,7 +97,7 @@ export default function CreateJobForm() {
           There was an error creating your job, please try again.
         </Text>
       )}
-    </Container>
+    </SectionContainer>
   );
 }
 
@@ -143,8 +162,8 @@ function FeeStructure({
   const [feeStructure, setFeeStructure] = React.useState<string>("");
   return (
     <>
-      <FormControl id="feeStructure" isRequired isInvalid={errors.description}>
-        <FormLabel>Description</FormLabel>
+      <FormControl id="feeStructure" isRequired isInvalid={errors.feeStructure}>
+        <FormLabel>Fee Structure</FormLabel>
         <Select
           {...register("feeStructure", {
             required: "This is required",
@@ -157,14 +176,18 @@ function FeeStructure({
         </Select>
         <FormHelperText>Please select a fee type.</FormHelperText>
         <FormErrorMessage>
-          {errors.description && errors.description.message}
+          {errors.feeStructure && errors.feeStructure.message}
         </FormErrorMessage>
       </FormControl>
       {feeStructure === "fixedFee" && (
         <FeeAmmount register={register} errors={errors} />
       )}
       {feeStructure === "noWinNoFee" && (
-        <FeePercentage register={register} errors={errors} />
+        <>
+          <FeePercentage register={register} errors={errors} />
+          <MinSettlement register={register} errors={errors} />
+          <MaxSettlement register={register} errors={errors} />
+        </>
       )}
     </>
   );
@@ -221,21 +244,56 @@ function FeeAmmount({
   );
 }
 
-function JobCreatedToast() {
-  const toast = useToast();
+function MinSettlement({
+  register,
+  errors,
+}: {
+  register: UseFormRegister<FieldValues>;
+  errors: any;
+}) {
   return (
-    <Button
-      onClick={() =>
-        toast({
-          title: "Account created.",
-          description: "We've created your account for you.",
-          status: "success",
-          duration: 9000,
-          isClosable: true,
-        })
-      }
-    >
-      Show Toast
-    </Button>
+    <FormControl id="minSettlement" isRequired isInvalid={errors.minSettlement}>
+      <FormLabel>Min Settlement</FormLabel>
+      <Input
+        type="number"
+        {...register("minSettlement", {
+          required: "This is required",
+          min: { value: 1, message: "Minimum value should be 1" },
+        })}
+      />
+      <FormHelperText>
+        Please enter the smallest settlement ammount.
+      </FormHelperText>
+      <FormErrorMessage>
+        {errors.minSettlement && errors.minSettlement.message}
+      </FormErrorMessage>
+    </FormControl>
+  );
+}
+
+function MaxSettlement({
+  register,
+  errors,
+}: {
+  register: UseFormRegister<FieldValues>;
+  errors: any;
+}) {
+  return (
+    <FormControl id="maxSettlement" isRequired isInvalid={errors.maxSettlement}>
+      <FormLabel>Max Settlement</FormLabel>
+      <Input
+        type="number"
+        {...register("maxSettlement", {
+          required: "This is required",
+          min: { value: 1, message: "Minimum value should be 1" },
+        })}
+      />
+      <FormHelperText>
+        Please enter the largest settlement ammount.
+      </FormHelperText>
+      <FormErrorMessage>
+        {errors.maxSettlement && errors.maxSettlement.message}
+      </FormErrorMessage>
+    </FormControl>
   );
 }
