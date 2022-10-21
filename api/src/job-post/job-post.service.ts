@@ -21,17 +21,15 @@ export class JobPostService {
     return this.jobPostModel.find().exec();
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return this.jobPostModel.findById(id).exec();
   }
 
-  update(id: number, updateJobPostDto: UpdateJobPostDto) {
+  update(id: string, updateJobPostDto: UpdateJobPostDto) {
     return this.jobPostModel.findByIdAndUpdate(id, updateJobPostDto).exec();
   }
 
   remove(id: string) {
-    console.log(id);
     return this.jobPostModel.findByIdAndDelete(id).exec();
   }
-  // set paid
 }

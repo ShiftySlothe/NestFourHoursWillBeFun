@@ -9,7 +9,13 @@ export interface JobPost {
   paidAmount?: number;
   feePercentage?: number;
   feeAmmount?: number;
+  settlementConstraints?: SettlementConstraints;
 }
+
+type SettlementConstraints = {
+  min: number;
+  max: number;
+};
 
 export const JobPostSchema = new mongoose.Schema<JobPost>({
   title: { type: String, required: true },
@@ -20,4 +26,8 @@ export const JobPostSchema = new mongoose.Schema<JobPost>({
   paidAmount: { type: Number },
   feePercentage: { type: Number },
   feeAmmount: { type: Number },
+  settlementConstraints: {
+    min: { type: Number },
+    max: { type: Number },
+  },
 });

@@ -21,6 +21,7 @@ export class JobPostController {
 
   @Post()
   create(@Body() createJobPostDto: CreateJobPostDto) {
+    console.log(createJobPostDto);
     if (!createJobPostDto.title) {
       console.log('Unable to create job post as title not found');
       throw new HttpException(standardErrRes, HttpStatus.BAD_REQUEST);
@@ -33,7 +34,7 @@ export class JobPostController {
       console.log('Unable to create post as no started found.');
       throw new HttpException(standardErrRes, HttpStatus.BAD_REQUEST);
     }
-    if (!createJobPostDto.paid) {
+    if (createJobPostDto.paid === undefined) {
       console.log('Unable to create post as no paid found.');
       throw new HttpException(standardErrRes, HttpStatus.BAD_REQUEST);
     }
@@ -58,10 +59,9 @@ export class JobPostController {
         HttpStatus.BAD_REQUEST,
       );
     }
-
     if (
       createJobPostDto.feeStructure === 'noWinNoFee' &&
-      createJobPostDto.feePercentage
+      (!createJobPostDto.feePercentage || !createJobPostDto.feeAmmount)
     ) {
       console.log('Unable to create post as feePercentage found.');
       throw new HttpException(
@@ -70,6 +70,19 @@ export class JobPostController {
       );
     }
 
+    if (
+      createJobPostDto.feePercentage > 1 ||
+      createJobPostDto.feePercentage < 0.1
+    ) {
+      console.log(
+        'Fee percentage range incorrect ',
+        createJobPostDto.feePercentage,
+      );
+      throw new HttpException(
+        'Fee percentage must be between 100 and 1',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     return this.jobPostService.create(createJobPostDto);
   }
 
@@ -80,12 +93,13 @@ export class JobPostController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.jobPostService.findOne(+id);
+    return this.jobPostService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateJobPostDto: UpdateJobPostDto) {
-    return this.jobPostService.update(+id, updateJobPostDto);
+    console.log(id);
+    return this.jobPostService.update(id, updateJobPostDto);
   }
 
   @Delete(':id')
