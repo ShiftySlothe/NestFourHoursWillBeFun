@@ -13,6 +13,10 @@ export default function AllJobs() {
     return <Container>Loading...</Container>;
   }
 
+  if (query.isError) {
+    return <Container>There was an error loading the jobs.</Container>;
+  }
+
   return (
     <Container>
       <Heading>All Jobs</Heading>
