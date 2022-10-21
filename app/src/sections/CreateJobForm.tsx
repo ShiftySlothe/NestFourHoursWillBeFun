@@ -15,9 +15,11 @@ import { useForm, UseFormRegister, FieldValues } from "react-hook-form";
 import { useMutation } from "react-query";
 import axios from "axios";
 import { queryClient } from "../App";
+import { useToast } from "@chakra-ui/react";
 
 export default function CreateJobForm() {
   const { handleSubmit, register, formState } = useForm();
+  const toast = useToast();
 
   const { errors, isSubmitting } = formState;
 
@@ -29,6 +31,24 @@ export default function CreateJobForm() {
     {
       onSuccess: () => {
         queryClient.invalidateQueries("jobs");
+        toast({
+          title: "Job created.",
+          description: "We've created your job for you.",
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+        });
+      },
+      // TODO: Remove any type
+      onError: (res: any) => {
+        const errorMsg = res.response.data.message;
+        toast({
+          title: "An error occurred.",
+          description: errorMsg,
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
       },
     }
   );
@@ -41,7 +61,6 @@ export default function CreateJobForm() {
     <Container>
       <Heading marginBottom={4}>Create a new job</Heading>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <TitleField register={register} errors={errors} />
         <DescriptionField register={register} errors={errors} />
         <FeeStructure register={register} errors={errors} />
         <FormControl>
@@ -202,4 +221,21 @@ function FeeAmmount({
   );
 }
 
-//
+function JobCreatedToast() {
+  const toast = useToast();
+  return (
+    <Button
+      onClick={() =>
+        toast({
+          title: "Account created.",
+          description: "We've created your account for you.",
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+        })
+      }
+    >
+      Show Toast
+    </Button>
+  );
+}

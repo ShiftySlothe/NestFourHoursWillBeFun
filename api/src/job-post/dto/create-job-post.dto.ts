@@ -1,6 +1,10 @@
 export class CreateJobPostDto {
-  name: string;
+  title: string;
   description: string;
   started: boolean;
   feeStructure: string;
+  paid: boolean;
+  paidAmount?: number;
+  feePercentage?: number;
+  feeAmmount?: number;
 }
