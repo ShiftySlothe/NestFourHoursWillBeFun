@@ -7,4 +7,10 @@ export class CreateJobPostDto {
   paidAmount?: number;
   feePercentage?: number;
   feeAmmount?: number;
+  settlementConstraints?: SettlementConstraints;
 }
+
+type SettlementConstraints = {
+  min: number;
+  max: number;
+};
