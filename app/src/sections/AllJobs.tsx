@@ -47,7 +47,7 @@ function JobPostItem({ job }: { job: JobPost }) {
     <>
       <Box
         onClick={onOpen}
-        key={job.id}
+        key={job._id}
         border={"1px solid black"}
         borderRadius={"5px"}
         padding={2}
@@ -75,8 +75,9 @@ function JobPostModal({
   isOpen: boolean;
   onClose: () => void;
 }) {
+  console.log(job);
   const deleteMutation = useMutation(
-    () => axios.delete(`http://localhost:4000/job-post/${job.id}`),
+    (id: string) => axios.delete(`http://localhost:4000/job-post/${id}`),
     {
       onSuccess: () => {
         queryClient.invalidateQueries("jobs");
@@ -85,13 +86,19 @@ function JobPostModal({
   );
 
   const setPaidMutation = useMutation(
-    () => axios.put(`http://localhost:4000/job-post/${job.id}`, { paid: true }),
+    (id: string) =>
+      axios.put(`http://localhost:4000/job-post/${id}`, { paid: true }),
     {
       onSuccess: () => {
         queryClient.invalidateQueries("jobs");
       },
     }
   );
+
+  const deleteJob = (id: string) => {
+    deleteMutation.mutate(id);
+    onClose();
+  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -115,7 +122,13 @@ function JobPostModal({
               {job.paid ? "Job paid" : "Mark paid"}
             </Button>
           </Flex>
-          <Button>Delete</Button>
+          <Button
+            onClick={() => {
+              deleteJob(job._id);
+            }}
+          >
+            Delete
+          </Button>
         </ModalBody>
       </ModalContent>
     </Modal>

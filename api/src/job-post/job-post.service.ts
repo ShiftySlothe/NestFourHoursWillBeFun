@@ -29,7 +29,9 @@ export class JobPostService {
     return this.jobPostModel.findByIdAndUpdate(id, updateJobPostDto).exec();
   }
 
-  remove(id: number) {
+  remove(id: string) {
+    console.log(id);
     return this.jobPostModel.findByIdAndDelete(id).exec();
   }
+  // set paid
 }

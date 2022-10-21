@@ -6,7 +6,7 @@ export enum UserTypes {
 }
 
 export interface JobPost {
-  id: string;
+  _id: string;
   title: string;
   description: string;
   started: boolean;
