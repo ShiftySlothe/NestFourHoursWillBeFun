@@ -117,7 +117,7 @@ function JobPostModal({
             mt={3}
             width={"100%"}
           >
-            <Text>Fee total: {job.paidAmount}</Text>
+            <Text>Fee total: {job.feeAmmount}</Text>
             <Button disabled={job.paid}>
               {job.paid ? "Job paid" : "Mark paid"}
             </Button>

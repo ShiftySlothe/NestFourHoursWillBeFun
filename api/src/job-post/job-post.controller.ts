@@ -49,6 +49,6 @@ export class JobPostController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.jobPostService.remove(+id);
+    return this.jobPostService.remove(id);
   }
 }

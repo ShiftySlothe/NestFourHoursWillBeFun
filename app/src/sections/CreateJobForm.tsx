@@ -23,7 +23,7 @@ export default function CreateJobForm() {
 
   const createJobMutation = useMutation(
     (formData: FieldValues) => {
-      const data = { ...formData, started: true };
+      const data = { ...formData, started: true, paid: false };
       return axios.post("http://localhost:4000/job-post", data);
     },
     {

@@ -6,7 +6,7 @@ export interface JobPost {
   started: boolean;
   feeStructure: string;
   paid: boolean;
-  paidAmount: number;
+  paidAmount?: number;
   feePercentage?: number;
   feeAmmount?: number;
 }
@@ -17,7 +17,7 @@ export const JobPostSchema = new mongoose.Schema<JobPost>({
   started: { type: Boolean, required: true },
   feeStructure: { type: String, required: true },
   paid: { type: Boolean, required: true },
-  paidAmount: { type: Number, required: true },
+  paidAmount: { type: Number },
   feePercentage: { type: Number },
   feeAmmount: { type: Number },
 });
