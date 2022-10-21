@@ -11,4 +11,6 @@ export interface JobPost {
   description: string;
   started: boolean;
   feeStructure: "fixedFee" | "noWinNoFee";
+  paid: boolean;
+  paidAmount: number;
 }
