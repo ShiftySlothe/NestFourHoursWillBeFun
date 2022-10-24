@@ -159,10 +159,10 @@ export class JobPostController {
     }
   }
 
-  private checkWithin10Percent(
-    job: JobPost,
-    updateJobPostDto: SetPaidJonPostDto,
-  ) {
+  // I've exposed this function to allow testing
+  // in a perfect world we'd set up a propper testing environment
+  // and use a mock database to run the tests completely
+  checkWithin10Percent(job: JobPost, updateJobPostDto: SetPaidJonPostDto) {
     const feeAmmount = updateJobPostDto.feeAmmount;
     const min = job.settlementConstraints.min;
     const max = job.settlementConstraints.max;
