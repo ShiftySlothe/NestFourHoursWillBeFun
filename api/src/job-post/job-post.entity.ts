@@ -1,4 +1,4 @@
-import { SettlementConstraints } from '../dto/create-job-post.dto';
+import { SettlementConstraints } from './dto/create-job-post.dto';
 
 export class JobPost {
   title: string;

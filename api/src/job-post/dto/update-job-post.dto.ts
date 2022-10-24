@@ -4,5 +4,5 @@ import { CreateJobPostDto } from './create-job-post.dto';
 export class UpdateJobPostDto extends PartialType(CreateJobPostDto) {}
 
 export class SetPaidJonPostDto {
-  feeAmmount: string;
+  feeAmmount: number;
 }

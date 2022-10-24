@@ -12,7 +12,7 @@ import {
 import { JobPostService } from './job-post.service';
 import { CreateJobPostDto } from './dto/create-job-post.dto';
 import { SetPaidJonPostDto, UpdateJobPostDto } from './dto/update-job-post.dto';
-import { JobPost } from './entities/job-post.entity';
+import { JobPost } from './job-post.entity';
 
 const standardErrRes =
   'Unable to create job post as form data invalid, please try again.';
@@ -22,7 +22,9 @@ export class JobPostController {
 
   @Post()
   create(@Body() createJobPostDto: CreateJobPostDto) {
+    console.log('POSTED');
     this.handleCreateErrors(createJobPostDto);
+    console.log('PASSED');
     return this.jobPostService.create(createJobPostDto);
   }
 
@@ -114,7 +116,6 @@ export class JobPostController {
     @Param('id') id: string,
     @Body() updateJobPostDto: SetPaidJonPostDto,
   ) {
-    console.log('SET PAID CALLED');
     const job = await this.jobPostService.findOne(id);
     this.checkSetPaidErrors(job, updateJobPostDto);
 
@@ -130,8 +131,6 @@ export class JobPostController {
     job: JobPost,
     updateJobPostDto: SetPaidJonPostDto,
   ) {
-    console.log(job);
-    console.log(updateJobPostDto);
     if (!job) {
       throw new HttpException(
         'Unable to set paid as job post not found',

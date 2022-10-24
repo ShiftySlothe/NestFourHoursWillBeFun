@@ -25,19 +25,26 @@ export default function CreateJobForm() {
 
   const createJobMutation = useMutation(
     // TODO: Find out how to type this
+    // TODO: Type data as JobPost
     (formData: FieldValues) => {
       // Turns feePercentage into correct decimal from numeric value
+      // TODO Refactor this code, extract
+      console.log(formData.feePercentage);
+      console.log(typeof formData.feePercentage);
       if (formData.feePercentage) {
+        // Converts string to int and percentage
         formData.feePercentage = formData.feePercentage * 0.01;
       }
-
       if (formData.feeStructure === "noWinNoFee") {
         if (!formData.minSettlement || !formData.maxSettlement) {
           // TODO: Raise sentry error
         }
+        console.log(formData.minSettlement);
+        console.log(typeof formData.minSettlement);
         formData.settlementConstraints = {
-          min: formData.minSettlement,
-          max: formData.maxSettlement,
+          // Converts string to int
+          min: +formData.minSettlement,
+          max: +formData.maxSettlement,
         };
         delete formData.minSettlement;
         delete formData.maxSettlement;
@@ -72,6 +79,7 @@ export default function CreateJobForm() {
   );
 
   function onSubmit(values: FieldValues) {
+    console.log("Submitting");
     createJobMutation.mutate(values);
   }
 
