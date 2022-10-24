@@ -112,8 +112,12 @@ function SettleAmmountForm({ job }: { job: JobPost }) {
   const toast = useToast();
 
   const setPaidMutation = useMutation(
-    (id: string) =>
-      axios.patch(`http://localhost:4000/job-post/${id}`, { paid: true }),
+    (data: { feeAmmount: number }) => {
+      const feeAmmount = data.feeAmmount;
+      return axios.patch(`http://localhost:4000/job-post/set-paid/${job._id}`, {
+        feeAmmount,
+      });
+    },
     {
       onSuccess: () => {
         queryClient.invalidateQueries("jobs");
@@ -138,15 +142,18 @@ function SettleAmmountForm({ job }: { job: JobPost }) {
     }
   );
 
+  // TODO passing correct type throws error, review typescript
+  // support for react-hook-form
   const onSubmit = (data: any) => {
-    setPaidMutation.mutate(job._id);
+    console.log(data);
+    setPaidMutation.mutate(data);
   };
 
   // TODO Fix button styles
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       {job.feeStructure === "noWinNoFee" && (
-        <SettlementAmmountField job={job} errors={errors} register={register} />
+        <NoWinNoFeeField job={job} errors={errors} register={register} />
       )}
       {job.feeStructure === "fixedFee" && (
         <FixedFeeField job={job} errors={errors} register={register} />
@@ -164,9 +171,10 @@ function FixedFeeField({
   errors: any;
   register: UseFormRegister<FieldValues>;
 }) {
+  // TODO throw sentry error if there is no feeAmmount
   return (
     <FormControl isInvalid={errors.settlementAmmount}>
-      <FormLabel id="settlementAmmount">Fee Ammount</FormLabel>
+      <FormLabel id="feeAmmount">Fee Ammount</FormLabel>
       <Flex
         direction={"row"}
         gap={3}
@@ -176,30 +184,35 @@ function FixedFeeField({
         width={"100%"}
       >
         <Input
-          {...register("settlementAmmount", {
-            required: "Settlement ammount is required.",
+          {...register("feeAmmount", {
+            required: "Required",
             min: {
-              value: 0,
-              message: "Settlement ammount must be greater than 0.",
+              value: job.feeAmmount || 0,
+              message: `The fee ammount must match £${job.feeAmmount}`,
+            },
+            max: {
+              value: job.feeAmmount || Infinity,
+              message: `The fee ammount must match £${job.feeAmmount}`,
             },
           })}
-          id="settlementAmmount"
-          placeholder="Settlement ammount"
-          value={job.feeAmmount}
-          disabled
+          id="feeAmmount"
+          placeholder={job.feeAmmount?.toString() || ""}
         />
         <Button disabled={job.paid} type="submit">
           {job.paid ? "Job paid" : "Mark paid"}
         </Button>
       </Flex>
+      <FormHelperText>
+        Confirm ammount by entering {job.feeAmmount?.toString()} above.
+      </FormHelperText>
       <FormErrorMessage>
-        {errors.settlementAmmount && errors.settlementAmmount.message}
+        {errors.feeAmmount && errors.feeAmmount.message}
       </FormErrorMessage>
     </FormControl>
   );
 }
 
-function SettlementAmmountField({
+function NoWinNoFeeField({
   job,
   register,
   errors,
@@ -208,10 +221,12 @@ function SettlementAmmountField({
   register: UseFormRegister<FieldValues>;
   errors: any;
 }) {
-  const minValue = job.settlementConstraints?.min || 0;
-  const maxValue = job.settlementConstraints?.max || Infinity;
+  // Settlement ammount should be within 10% of min/max
+  const minValue = (job.settlementConstraints?.min || 0) * 0.9;
+  const maxValue = (job.settlementConstraints?.max || Infinity) * 1.1;
+
   return (
-    <FormControl id="settleAmmount" isRequired isInvalid={errors.settleAmmount}>
+    <FormControl id="feeAmmount" isRequired isInvalid={errors.feeAmmount}>
       <FormLabel>Settlement Ammount</FormLabel>
       <Flex
         direction={"row"}
@@ -223,19 +238,19 @@ function SettlementAmmountField({
       >
         <Input
           type="number"
-          {...register("settleAmmount", {
-            required: "This is required",
+          {...register("feeAmmount", {
+            required: "This is required.",
             min: {
               value: minValue,
-              message: `Minimum value should be ${minValue}`,
+              message: `Minimum expect settlement is ${minValue}. Contact your solilcitor for more information.`,
             },
             max: {
               value: job.settlementConstraints?.max || Infinity,
-              message: `Maximum value should be ${maxValue}`,
+              message: `Maximum expected settlement is ${maxValue}. Contact your solilcitor for more information.`,
             },
           })}
           disabled={job.paid}
-          value={job.paid ? job.paidAmount : ""}
+          defaultValue={job.feeAmmount}
         />
         <Button disabled={job.paid} type="submit">
           {job.paid ? "Job paid" : "Mark paid"}
@@ -243,7 +258,7 @@ function SettlementAmmountField({
       </Flex>
       <FormHelperText>Please enter the fee percentage.</FormHelperText>
       <FormErrorMessage>
-        {errors.settleAmmount && errors.settleAmmount.message}
+        {errors.feeAmmount && errors.feeAmmount.message}
       </FormErrorMessage>
     </FormControl>
   );

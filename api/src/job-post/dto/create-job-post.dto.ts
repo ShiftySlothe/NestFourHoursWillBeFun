@@ -9,8 +9,7 @@ export class CreateJobPostDto {
   feeAmmount?: number;
   settlementConstraints?: SettlementConstraints;
 }
-
-type SettlementConstraints = {
+export type SettlementConstraints = {
   min: number;
   max: number;
 };

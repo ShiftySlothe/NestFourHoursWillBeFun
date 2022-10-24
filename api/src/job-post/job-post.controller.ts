@@ -11,7 +11,8 @@ import {
 } from '@nestjs/common';
 import { JobPostService } from './job-post.service';
 import { CreateJobPostDto } from './dto/create-job-post.dto';
-import { UpdateJobPostDto } from './dto/update-job-post.dto';
+import { SetPaidJonPostDto, UpdateJobPostDto } from './dto/update-job-post.dto';
+import { JobPost } from './entities/job-post.entity';
 
 const standardErrRes =
   'Unable to create job post as form data invalid, please try again.';
@@ -106,6 +107,77 @@ export class JobPostController {
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateJobPostDto: UpdateJobPostDto) {
     return this.jobPostService.update(id, updateJobPostDto);
+  }
+
+  @Patch('set-paid/:id')
+  async setPaid(
+    @Param('id') id: string,
+    @Body() updateJobPostDto: SetPaidJonPostDto,
+  ) {
+    console.log('SET PAID CALLED');
+    const job = await this.jobPostService.findOne(id);
+    this.checkSetPaidErrors(job, updateJobPostDto);
+
+    const update = {
+      paid: true,
+      feeAmmount: updateJobPostDto.feeAmmount,
+      paidAmmount: updateJobPostDto.feeAmmount,
+    };
+    return this.jobPostService.update(id, update);
+  }
+
+  private checkSetPaidErrors(
+    job: JobPost,
+    updateJobPostDto: SetPaidJonPostDto,
+  ) {
+    console.log(job);
+    console.log(updateJobPostDto);
+    if (!job) {
+      throw new HttpException(
+        'Unable to set paid as job post not found',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    if (job.feeStructure === 'fixedFee' && !updateJobPostDto.feeAmmount) {
+      throw new HttpException(
+        'Unable to set paid as feeAmmount not found',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    if (
+      job.feeStructure === 'fixedFee' &&
+      job.feeAmmount !== updateJobPostDto.feeAmmount
+    ) {
+      throw new HttpException(
+        'Unable to set paid as feeAmmount does not match',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    if (job.feeStructure === 'noWinNoFee') {
+      this.checkWithin10Percent(job, updateJobPostDto);
+    }
+  }
+
+  private checkWithin10Percent(
+    job: JobPost,
+    updateJobPostDto: SetPaidJonPostDto,
+  ) {
+    const feeAmmount = updateJobPostDto.feeAmmount;
+    const min = job.settlementConstraints.min;
+    const max = job.settlementConstraints.max;
+    const feePercentage = job.feePercentage;
+
+    const minFee = min * feePercentage;
+    const maxFee = max * feePercentage;
+
+    if (feeAmmount < minFee || feeAmmount > maxFee) {
+      throw new HttpException(
+        "Unable to set paid as feeAmmount isn't within expected range, contact your solicitior for more information.",
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 
   @Delete(':id')
